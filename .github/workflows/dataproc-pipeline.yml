@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+env:
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+
 jobs:
   dataproc-job:
     runs-on: ubuntu-latest
@@ -14,24 +17,39 @@ jobs:
       - name: Checkout Repository
         uses: actions/checkout@v3
 
-      # 2️⃣ Authenticate to GCP
-      - name: Authenticate to GCP
-        uses: google-github-actions/auth@v2
-        with:
-          credentials_json: '${{ secrets.GCP_SA_KEY }}'
-
-      # 3️⃣ Setup gcloud SDK
+      # 2️⃣ Setup gcloud SDK
       - name: Setup gcloud
         uses: google-github-actions/setup-gcloud@v2
         with:
           project_id: kishan-learning-project-1
 
-      # 4️⃣ Upload PySpark job to Cloud Storage
+      # 3️⃣ Authenticate to GCP
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      # 4️⃣ Explicitly activate SA for gcloud
+      - name: Activate service account for gcloud
+        run: |
+          echo "${{ secrets.GCP_SA_KEY }}" > sa_key.json
+          gcloud auth activate-service-account --key-file=sa_key.json
+          gcloud config set project kishan-learning-project-1
+
+      # 5️⃣ Upload PySpark job to Cloud Storage
       - name: Upload PySpark Job to GCS
         run: |
           gsutil cp pysaprk_jobs/etl_job.py gs://dataproc-cicd-demo1/pysaprk_jobs/
 
-      # 5️⃣ Submit PySpark job to Dataproc job fix
+      # 6️⃣ Debug step (optional)
+      - name: List GCS bucket content
+        run: |
+          gsutil ls gs://dataproc-cicd-demo1/pysaprk_jobs/
+
+      # 7️⃣ Submit PySpark job to Dataproc
       - name: Submit Dataproc Job
         run: |
-          gcloud dataproc jobs submit pyspark gs://dataproc-cicd-demo1/pysaprk_jobs/etl_job.py --cluster=cluster-dataproc-cicd-demo1 --region=us-west1
+          gcloud dataproc jobs submit pyspark gs://dataproc-cicd-demo1/pysaprk_jobs/etl_job.py \
+            --cluster=cluster-dataproc-cicd-demo1 \
+            --region=us-west1 \
+            --quiet
