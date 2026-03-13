@@ -29,7 +29,7 @@ jobs:
       # 4️⃣ Upload PySpark job to Cloud Storage
       - name: Upload PySpark Job to GCS
         run: |
-          gsutil cp jobs/etl_job.py gs://dataproc-cicd-demo1/pysaprk_jobs/
+          gsutil cp pysaprk_jobs/etl_job.py gs://dataproc-cicd-demo1/pysaprk_jobs/
 
       # 5️⃣ Submit PySpark job to Dataproc
       - name: Submit Dataproc Job
