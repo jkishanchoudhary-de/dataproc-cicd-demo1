@@ -1,0 +1,39 @@
+name: Dataproc PySpark CI/CD
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  dataproc-job:
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1️⃣ Checkout your repository
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      # 2️⃣ Authenticate to GCP
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: '${{ secrets.GCP_SA_KEY }}'
+
+      # 3️⃣ Setup gcloud SDK
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: kishan-learning-project-1
+
+      # 4️⃣ Upload PySpark job to Cloud Storage
+      - name: Upload PySpark Job to GCS
+        run: |
+          gsutil cp jobs/sales_etl.py gs://dataproc-cicd-demo1/pysaprk_jobs/
+
+      # 5️⃣ Submit PySpark job to Dataproc
+      - name: Submit Dataproc Job
+        run: |
+          gcloud dataproc jobs submit pyspark gs://YOUR_BUCKET/jobs/sales_etl.py \
+            --cluster=YOUR_CLUSTER \
+            --region=YOUR_REGION
