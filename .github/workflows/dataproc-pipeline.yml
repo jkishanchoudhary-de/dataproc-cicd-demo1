@@ -31,7 +31,7 @@ jobs:
         run: |
           gsutil cp pysaprk_jobs/etl_job.py gs://dataproc-cicd-demo1/pysaprk_jobs/
 
-      # 5️⃣ Submit PySpark job to Dataproc
+      # 5️⃣ Submit PySpark job to Dataproc job
       - name: Submit Dataproc Job
         run: |
           gcloud dataproc jobs submit pyspark gs://dataproc-cicd-demo1/pysaprk_jobs/etl_job.py \
