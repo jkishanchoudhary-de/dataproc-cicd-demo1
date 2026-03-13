@@ -34,6 +34,4 @@ jobs:
       # 5️⃣ Submit PySpark job to Dataproc job fix
       - name: Submit Dataproc Job
         run: |
-          gcloud dataproc jobs submit pyspark gs://dataproc-cicd-demo1/pysaprk_jobs/etl_job.py \
-            --cluster=cluster-dataproc-cicd-demo1 \
-            --region=us-west1
+          gcloud dataproc jobs submit pyspark gs://dataproc-cicd-demo1/pysaprk_jobs/etl_job.py --cluster=cluster-dataproc-cicd-demo1 --region=us-west1
